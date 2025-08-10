@@ -2,3 +2,4 @@
 
 export(typeaheadInput)
 export(updateTypeaheadInput)
+importFrom(utils,modifyList)
