@@ -22,6 +22,8 @@ typeaheadInput(
 
 \item{label}{Display label for the control, or \code{NULL} for no label.}
 
+\item{choices}{Character vector of choices to display in dropdown}
+
 \item{value}{Initial value.}
 
 \item{width}{The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
@@ -31,7 +33,13 @@ see \code{\link[shiny:validateCssUnit]{validateCssUnit()}}.}
 be entered into the control. Internet Explorer 8 and 9 do not support this
 option.}
 
-\item{hint}{Logical; whether to show hints as you type}
+\item{items}{Maximum number of items to show in dropdown (default 8)}
+
+\item{min_length}{Minimum number of characters before showing suggestions (default 1)}
+
+\item{hint}{Logical; whether to show hints as you type (default TRUE)}
+
+\item{options}{List of additional options to pass to typeahead library}
 }
 \description{
 Bootstrap-styled text box with client-side autocomplete.

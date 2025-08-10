@@ -13,6 +13,19 @@ updateTypeaheadInput(
   min_length = NULL
 )
 }
+\arguments{
+\item{session}{The Shiny session object}
+
+\item{inputId}{The id of the typeahead input to update}
+
+\item{choices}{New character vector of choices (optional)}
+
+\item{value}{New selected value (optional)}
+
+\item{items}{New maximum number of items to show (optional)}
+
+\item{min_length}{New minimum characters before showing suggestions (optional)}
+}
 \description{
 Replace choices, value or settings client-side.
 }
