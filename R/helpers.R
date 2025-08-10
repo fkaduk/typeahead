@@ -3,6 +3,9 @@
 #' @param a Left-hand side value
 #' @param b Right-hand side value
 #' @return Returns \code{b} if \code{a} is NULL, otherwise returns \code{a}
+#' @name grapes-or-or-grapes
+#' @rdname grapes-or-or-grapes
+#' @keywords internal
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
 #' @title Drop NULL elements from a list

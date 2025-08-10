@@ -14,7 +14,11 @@ dependency_typeahead_standalone <- function() {
 #' @title Type-ahead text input
 #' @description Bootstrap-styled text box with client-side autocomplete.
 #' @inheritParams shiny::textInput
-#' @param hint Logical; whether to show hints as you type
+#' @param choices Character vector of choices to display in dropdown
+#' @param items Maximum number of items to show in dropdown (default 8)
+#' @param min_length Minimum number of characters before showing suggestions (default 1)
+#' @param hint Logical; whether to show hints as you type (default TRUE)
+#' @param options List of additional options to pass to typeahead library
 #' @export
 typeaheadInput <- function(inputId,
                            label = NULL,
@@ -95,6 +99,12 @@ typeaheadInput <- function(inputId,
 
 #' @title Update a typeahead input
 #' @description Replace choices, value or settings client-side.
+#' @param session The Shiny session object
+#' @param inputId The id of the typeahead input to update
+#' @param choices New character vector of choices (optional)
+#' @param value New selected value (optional)
+#' @param items New maximum number of items to show (optional)
+#' @param min_length New minimum characters before showing suggestions (optional)
 #' @export
 updateTypeaheadInput <- function(session,
                                  inputId,
