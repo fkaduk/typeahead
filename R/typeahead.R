@@ -1,5 +1,6 @@
 #' @title typeahead-standalone dependency
 #' @description Registers JS + CSS with Shiny
+#' @importFrom utils modifyList
 dependency_typeahead_standalone <- function() {
   htmltools::htmlDependency(
     name       = "typeahead-standalone",
