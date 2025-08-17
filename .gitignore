@@ -6,3 +6,6 @@ inst/doc
 .httr-oauth
 .DS_Store
 .quarto
+*.Rcheck/
+# {shinytest2}: Ignore new debug snapshots for `$expect_values()`
+*_.new.png
