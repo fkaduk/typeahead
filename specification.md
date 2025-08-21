@@ -8,8 +8,7 @@ It wraps the typeahead-standalone JavaScript library to deliver both client-side
 ## expected behavior
 
 - users can create typeahead text inputs using the `typeaheadInput()` function
-- the `typeaheadInput()` function exposes core functionality of the `typeahead-standalone` JavaScript library, including:
-    - independent control of hints and dropdown visibility
+- the `typeaheadInput()` function exposes core functionality of the `typeahead-standalone` JavaScript library with dropdown suggestions
 - users can dynamically update typeahead choices and selected values using `updateTypeaheadInput()`, following `updateSelectInput()` behavior:
     - multiple rapid calls are batched and only the final state is sent to browser after the reactive cycle completes
 - default styling matches `selectInput` appearance and behavior
@@ -32,7 +31,6 @@ It wraps the typeahead-standalone JavaScript library to deliver both client-side
 #' @param placeholder Character string or NULL. Placeholder text shown when input is empty.
 #' @param items Integer. Maximum number of suggestions to display in dropdown (default 8).
 #' @param min_length Integer. Minimum number of characters required before showing suggestions (default 1).
-#' @param hint Logical. Whether to show auto-completion hints as user types (default TRUE).
 #' @param options List. Additional options passed to the typeahead.js library.
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
@@ -44,7 +42,6 @@ typeaheadInput <- function(inputId,
                            placeholder = NULL,
                            items = 8,
                            min_length = 1,
-                           hint = TRUE,
                            options = list()) {
   # Implementation
 }
@@ -82,6 +79,7 @@ updateTypeaheadInput <- function(session = getDefaultReactiveDomain(),
 
 ## possible extension
 
+- [ ] add `hint` parameter for auto-completion hints (requires fixing Bootstrap CSS positioning issues!)
 - [ ] make it possible for the typeahead input to load remote data
 - [ ] add `reactive_on` parameter to control when shiny reactivity triggers (e.g., "selection", "input", "debounced")
 - [ ] add `template` parameter for complex entry templates with rich display formatting
