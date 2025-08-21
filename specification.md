@@ -3,7 +3,7 @@
 ## overview
 
 The `typeahead` package provides autocomplete text input components for R Shiny applications and R markdown.
-It wraps the typeahead-standalone JavaScript library to deliver both server- and client-side type-ahead functionality with dropdown and inline suggestions.
+It wraps the typeahead-standalone JavaScript library to deliver both client-side type-ahead functionality with dropdown and inline suggestions.
 
 ## expected behavior
 
@@ -16,12 +16,12 @@ It wraps the typeahead-standalone JavaScript library to deliver both server- and
 - supports `bslib` theming and customization
 - Shiny reactivity triggers only on selection, not on every keystroke
 - the api should match `selectInput` as far as is reasonable to offer a familiar interface
-- empty state handling: with `choices = character(0)` or `NULL`, renders functional input field with no suggestions and `NULL` value
+- empty state handling: with `choices = character(0)` or `NULL`, renders functional input field with no suggestions and `NULL` value and return value `""`
 
 ## function APIs
 
 ```r
-#' @title Type-ahead text input
+#' @title Create a type-ahead input control
 #' @description Bootstrap-styled text box with client-side autocomplete.
 #' @param inputId Character string. Unique identifier for the input element.
 #' @param label Character string or NULL. Display label above the input field.
@@ -36,24 +36,32 @@ It wraps the typeahead-standalone JavaScript library to deliver both server- and
 #' @param options List. Additional options passed to the typeahead.js library.
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
-typeaheadInput <- function(inputId, label, choices = character(), value = NULL, 
-                          width = NULL, placeholder = NULL, items = 8, 
-                          min_length = 1, hint = TRUE, options = list()) {
+typeaheadInput <- function(inputId,
+                           label = NULL,
+                           choices = character(),
+                           value = NULL,
+                           width = NULL,
+                           placeholder = NULL,
+                           items = 8,
+                           min_length = 1,
+                           hint = TRUE,
+                           options = list()) {
   # Implementation
 }
 
 #' @title Update a typeahead input
-#' @description Replace choices, value or settings client-side.
-#' @param session The Shiny session object (default: getDefaultReactiveDomain()).
+#' @description Replace choices or value of typeaheadInput
+#' @param session Shiny session object (default: getDefaultReactiveDomain()).
 #' @param inputId Character string. The id of the typeahead input to update.
 #' @param label Character string or NULL. New display label (optional).
-#' @param choices Character vector or NULL. New choices for autocomplete (optional).
+#' @param choices Character vector or NULL. New choices (optional).
 #' @param value Character string or NULL. New selected value (optional).
-#' @param options List or NULL. New typeahead-specific options (optional).
 #' @export
-updateTypeaheadInput <- function(session = getDefaultReactiveDomain(), inputId, 
-                                label = NULL, choices = NULL, value = NULL, 
-                                options = NULL) {
+updateTypeaheadInput <- function(session = getDefaultReactiveDomain(),
+                                 inputId,
+                                 label = NULL,
+                                 choices = NULL,
+                                 value = NULL) {
   # Implementation  
 }
 ```
@@ -66,7 +74,7 @@ updateTypeaheadInput <- function(session = getDefaultReactiveDomain(), inputId,
     - message sending without error when updating typeahead
 - integration tests via shinytest2
     - ensure that typing into the field generates suggestions
-    - make sure updateTypeaheads is immediately reflected in the ui
+    - make sure updateTypeahead is immediately reflected in the ui
 - snapshot tests
     - making sure ui works, also if other elements are displayed
     - ensure bootstrap styling via bslib works
@@ -77,4 +85,3 @@ updateTypeaheadInput <- function(session = getDefaultReactiveDomain(), inputId,
 - [ ] make it possible for the typeahead input to load remote data
 - [ ] add `reactive_on` parameter to control when shiny reactivity triggers (e.g., "selection", "input", "debounced")
 - [ ] add `template` parameter for complex entry templates with rich display formatting
-- [ ] add support for remote data sources for dynamic choices
