@@ -2,7 +2,7 @@
 % Please edit documentation in R/typeahead.R
 \name{typeaheadInput}
 \alias{typeaheadInput}
-\title{Type-ahead text input}
+\title{Create a type-ahead input control}
 \usage{
 typeaheadInput(
   inputId,
@@ -13,33 +13,30 @@ typeaheadInput(
   placeholder = NULL,
   items = 8,
   min_length = 1,
-  hint = TRUE,
   options = list()
 )
 }
 \arguments{
-\item{inputId}{The \code{input} slot that will be used to access the value.}
+\item{inputId}{Character string. Unique identifier for the input element.}
 
-\item{label}{Display label for the control, or \code{NULL} for no label.}
+\item{label}{Character string or NULL. Display label above the input field.}
 
-\item{choices}{Character vector of choices to display in dropdown}
+\item{choices}{Character vector. Available options for autocomplete suggestions.}
 
-\item{value}{Initial value.}
+\item{value}{Character string or NULL. Initial value to display in the input.}
 
-\item{width}{The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
-see \code{\link[shiny:validateCssUnit]{validateCssUnit()}}.}
+\item{width}{Character string or NULL. CSS width specification (e.g., "100\%", "300px").}
 
-\item{placeholder}{A character string giving the user a hint as to what can
-be entered into the control. Internet Explorer 8 and 9 do not support this
-option.}
+\item{placeholder}{Character string or NULL. Placeholder text shown when input is empty.}
 
-\item{items}{Maximum number of items to show in dropdown (default 8)}
+\item{items}{Integer. Maximum number of suggestions to display in dropdown (default 8).}
 
-\item{min_length}{Minimum number of characters before showing suggestions (default 1)}
+\item{min_length}{Integer. Minimum number of characters required before showing suggestions (default 1).}
 
-\item{hint}{Logical; whether to show hints as you type (default TRUE)}
-
-\item{options}{List of additional options to pass to typeahead library}
+\item{options}{List. Additional options passed to the typeahead.js library.}
+}
+\value{
+A shiny.tag.list object containing the HTML input element with attached dependencies.
 }
 \description{
 Bootstrap-styled text box with client-side autocomplete.

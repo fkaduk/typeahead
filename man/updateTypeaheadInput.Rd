@@ -5,27 +5,24 @@
 \title{Update a typeahead input}
 \usage{
 updateTypeaheadInput(
-  session,
+  session = getDefaultReactiveDomain(),
   inputId,
+  label = NULL,
   choices = NULL,
-  value = NULL,
-  items = NULL,
-  min_length = NULL
+  value = NULL
 )
 }
 \arguments{
-\item{session}{The Shiny session object}
+\item{session}{Shiny session object (default: getDefaultReactiveDomain()).}
 
-\item{inputId}{The id of the typeahead input to update}
+\item{inputId}{Character string. The id of the typeahead input to update.}
 
-\item{choices}{New character vector of choices (optional)}
+\item{label}{Character string or NULL. New display label (optional).}
 
-\item{value}{New selected value (optional)}
+\item{choices}{Character vector or NULL. New choices (optional).}
 
-\item{items}{New maximum number of items to show (optional)}
-
-\item{min_length}{New minimum characters before showing suggestions (optional)}
+\item{value}{Character string or NULL. New selected value (optional).}
 }
 \description{
-Replace choices, value or settings client-side.
+Replace choices or value of typeaheadInput
 }
