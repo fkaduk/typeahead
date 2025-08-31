@@ -20,10 +20,10 @@ describe("Null coalescing operator (%||%)", {
   })
 })
 
-describe("dropNulls", {
+describe("drop_nulls", {
   it("removes NULL elements from list", {
     test_list <- list(a = 1, b = NULL, c = "test", d = NULL, e = 5)
-    result <- dropNulls(test_list)
+    result <- drop_nulls(test_list)
 
     expect_equal(length(result), 3)
     expect_equal(result$a, 1)
@@ -35,21 +35,21 @@ describe("dropNulls", {
 
   it("works with vectors", {
     test_vector <- c("a", NULL, "b", NULL, "c")
-    result <- dropNulls(test_vector)
+    result <- drop_nulls(test_vector)
 
     expect_equal(result, c("a", "b", "c"))
   })
 
   it("returns empty list when all elements are NULL", {
     test_list <- list(a = NULL, b = NULL)
-    result <- dropNulls(test_list)
+    result <- drop_nulls(test_list)
 
     expect_equal(length(result), 0)
   })
 
   it("returns unchanged list when no NULL elements", {
     test_list <- list(a = 1, b = "test", c = TRUE)
-    result <- dropNulls(test_list)
+    result <- drop_nulls(test_list)
 
     expect_equal(result, test_list)
   })

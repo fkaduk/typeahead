@@ -12,4 +12,4 @@
 #' @description Removes NULL elements from a list or vector
 #' @param x A list or vector
 #' @return The input with NULL elements removed
-dropNulls <- function(x) Filter(Negate(is.null), x)
+drop_nulls <- function(x) Filter(Negate(is.null), x)
