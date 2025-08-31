@@ -1,37 +1,37 @@
-#' Types a single character into <input id = inputId>.
+#' Generate JS snippet to set input value with InputEvent semantics
 #'
-#' @param inputId Single, non-empty character string: the HTML id of your input.
-#' @param value Single character to “type”.
-#' @return character length 1
-#' @return A JS string ready for `AppDriver$run_js()`.
-js_type_letter <- function(inputId, value) {
-  stopifnot(
-    length(inputId) == 1L,
-    is.character(inputId),
-    nzchar(inputId),
-    grepl("^[A-Za-z][A-Za-z0-9_:\\-\\.]*$", inputId)
-  )
+#' @param inputId The HTML input id (single string).
+#' @param value A string to set as the input value.
+#' @return A single JS string you can pass to app$run_js().
+js_input_event_set <- function(inputId, value) {
+  stopifnot(is.character(inputId), length(inputId) == 1L, nzchar(inputId))
+  stopifnot(is.character(value), length(value) == 1L)
 
-  stopifnot(
-    length(value) == 1L,
-    is.character(value),
-    nzchar(value),
-    nchar(value, type = "bytes") > 0L
-  )
+  id_js <- jsonlite::toJSON(inputId, auto_unbox = TRUE)
+  val_js <- jsonlite::toJSON(value, auto_unbox = TRUE)
 
   sprintf(
     paste(
       "const el = document.getElementById(%s);",
-      "if (!el) throw new Error('Element %s not found in DOM');",
-      "el.value = %s;", # set 1-char value
-      "el.dispatchEvent(new InputEvent('input', {", # fire `input`
+      "if (!el) throw new Error('Element %s not found');",
+      "el.focus();",
+      "el.value = %s;",
+      "el.dispatchEvent(new InputEvent('input', {",
       "  data: %s, inputType: 'insertText', bubbles: true",
       "}));",
       sep = "\n"
     ),
-    jsonlite::toJSON(inputId, auto_unbox = TRUE),
-    inputId,
-    jsonlite::toJSON(value, auto_unbox = TRUE),
-    jsonlite::toJSON(value, auto_unbox = TRUE)
+    id_js, # element ID, properly quoted
+    inputId, # for friendly error message
+    val_js, # the input value
+    val_js # same data for InputEvent 'data'
   )
+}
+
+js_wait_for_suggestions <- function() {
+  "
+  !!document.querySelector('.tt-list') &&
+    !document.querySelector('.tt-list').classList.contains('tt-hide') &&
+    document.querySelectorAll('.tt-suggestion').length > 0
+  "
 }
