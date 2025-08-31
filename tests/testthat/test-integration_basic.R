@@ -1,3 +1,6 @@
+library(shinytest2)
+library(shiny)
+
 describe("typeaheadInput — filtering logic", {
   it("renders gracefully with an empty dataset", {
     # GIVEN
@@ -14,7 +17,7 @@ describe("typeaheadInput — filtering logic", {
     )
 
     # WHEN
-    app$run_js(js_type_letter("empty", "A"))
+    app$run_js(js_input_event_set("empty", "A"))
 
     # THEN
     expect_true(app$get_js('document.getElementById("empty") !== null'))
@@ -44,15 +47,11 @@ describe("typeaheadInput — filtering logic", {
     )
 
     # WHEN
-    # TODO: is this waiting actually necessary?
-    # app$wait_for_js("document.getElementById('city').classList.contains('tt-input')")
-
-    app$run_js(js_type_letter("city", "B"))
-    expect_equal(app$get_js('document.getElementById(\"city\").value'), "B")
-    # app$wait_for_js('document.querySelectorAll(\".tt-suggestion\").length>0')
+    app$run_js(js_input_event_set("city", "B"))
+    expect_equal(app$get_js('document.getElementById("city").value'), "B")
 
     # THEN
-    expect_equal(app$get_js('document.querySelectorAll(\".tt-suggestion\").length'), 4)
+    expect_equal(app$get_js('document.querySelectorAll(".tt-suggestion").length'), 4)
     app$stop()
   })
 
@@ -71,7 +70,7 @@ describe("typeaheadInput — filtering logic", {
     )
 
     # WHEN
-    app$run_js(js_type_letter("city", "Ber"))
+    app$run_js(js_input_event_set("city", "Ber"))
 
     # THEN
     expect_equal(app$get_js('document.getElementById(\"city\").value'), "Ber")
@@ -95,8 +94,8 @@ describe("typeaheadInput — filtering logic", {
     )
 
     # WHEN
-    app$run_js(js_type_letter("city", "B"))
-    app$run_js(js_type_letter("city", "Be"))
+    app$run_js(js_input_event_set("city", "B"))
+    app$run_js(js_input_event_set("city", "Be"))
 
     # THEN
     expect_equal(app$get_js('document.getElementById(\"city\").value'), "Be")
