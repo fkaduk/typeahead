@@ -88,7 +88,16 @@ updateTypeaheadInput <- function(
   choices = NULL,
   value = NULL
 ) {
-  shiny:::validate_session_object(session)
+  # emulate shiny:::validate_session_object()
+  if (
+    !inherits(session, c("ShinySession", "MockShinySession", "session_proxy"))
+  ) {
+    stop(
+      "`session` must be a ShinySession object. ",
+      "Did you forget to pass `session` to `updateTypeaheadInput()`?",
+      call. = FALSE
+    )
+  }
   msg <- list(
     label = label,
     choices = choices,
