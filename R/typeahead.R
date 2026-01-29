@@ -3,12 +3,18 @@
 #' @importFrom utils modifyList
 dependency_typeahead_standalone <- function() {
   htmltools::htmlDependency(
-    name       = "typeahead-standalone",
-    version    = "5.4.0",
-    src        = c(file = "assets"),
-    script     = c("lib/typeahead-standalone/typeahead-standalone.umd.js", "js/typeahead-binding.js"),
-    stylesheet = c("lib/typeahead-standalone/basic.css", "css/typeahead-shiny.css"),
-    package    = "typeahead"
+    name = "typeahead-standalone",
+    version = "5.4.0",
+    src = c(file = "assets"),
+    script = c(
+      "lib/typeahead-standalone/typeahead-standalone.umd.js",
+      "js/typeahead-binding.js"
+    ),
+    stylesheet = c(
+      "lib/typeahead-standalone/basic.css",
+      "css/typeahead-shiny.css"
+    ),
+    package = "typeahead"
   )
 }
 
@@ -25,17 +31,23 @@ dependency_typeahead_standalone <- function() {
 #' @param options List. Additional options passed to the typeahead.js library.
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
-typeaheadInput <- function(inputId,
-                           label = NULL,
-                           choices = character(),
-                           value = NULL,
-                           width = NULL,
-                           placeholder = NULL,
-                           items = 8,
-                           min_length = 1,
-                           options = list()) {
+typeaheadInput <- function(
+  inputId,
+  label = NULL,
+  choices = character(),
+  value = NULL,
+  width = NULL,
+  placeholder = NULL,
+  items = 8,
+  min_length = 1,
+  options = list()
+) {
   opts <- modifyList(
-    list(limit = items, minLength = min_length, hint = FALSE), # Hints are broken for now
+    list(
+      limit = items,
+      minLength = min_length,
+      hint = FALSE #TODO: Hints are broken for now
+    ),
     options
   )
 
@@ -50,7 +62,9 @@ typeaheadInput <- function(inputId,
     `data-source` = jsonlite::toJSON(choices, auto_unbox = TRUE),
     `data-options` = jsonlite::toJSON(opts, auto_unbox = TRUE, null = "null"),
     placeholder = placeholder,
-    style = if (!is.null(width)) sprintf("width:%s;", shiny::validateCssUnit(width))
+    style = if (!is.null(width)) {
+      sprintf("width:%s;", shiny::validateCssUnit(width))
+    }
   )
 
   htmltools::tagList(
@@ -67,16 +81,18 @@ typeaheadInput <- function(inputId,
 #' @param choices Character vector or NULL. New choices (optional).
 #' @param value Character string or NULL. New selected value (optional).
 #' @export
-updateTypeaheadInput <- function(session = shiny::getDefaultReactiveDomain(),
-                                 inputId,
-                                 label = NULL,
-                                 choices = NULL,
-                                 value = NULL) {
+updateTypeaheadInput <- function(
+  session = shiny::getDefaultReactiveDomain(),
+  inputId,
+  label = NULL,
+  choices = NULL,
+  value = NULL
+) {
   shiny:::validate_session_object(session)
   msg <- list(
-    label   = label,
+    label = label,
     choices = choices,
-    value   = if (!is.null(value)) as.character(value) else NULL
+    value = if (!is.null(value)) as.character(value) else NULL
   )
   session$sendInputMessage(
     inputId = inputId,
