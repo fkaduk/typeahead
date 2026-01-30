@@ -24,7 +24,7 @@ document: $(SENTINEL) ## Generate documentation with roxygen2
 	$(DOCKER_RUN) R -e "setwd('/pkg'); devtools::document()"
 
 style: $(SENTINEL) ## Format code with styler
-	$(DOCKER_RUN) R -e "setwd('/pkg'); styler::style_pkg()"
+	$(DOCKER_RUN) R -e "setwd('/pkg'); install.packages('styler'); styler::style_pkg()"
 
 demo: $(SENTINEL) ## Run the demo app in Docker
 	docker run --rm -it -p 3838:3838 -v "$$(pwd):/pkg" $(DOCKER_IMAGE) R -e "setwd('/pkg'); devtools::install(); shiny::runApp('inst/examples', port = 3838, host = '0.0.0.0')"

@@ -32,21 +32,20 @@ dependency_typeahead <- function() {
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
 typeaheadInput <- function(
-  inputId,
-  label = NULL,
-  choices = character(),
-  value = NULL,
-  width = NULL,
-  placeholder = NULL,
-  items = 8,
-  min_length = 1,
-  options = list()
-) {
+    inputId,
+    label = NULL,
+    choices = character(),
+    value = NULL,
+    width = NULL,
+    placeholder = NULL,
+    items = 8,
+    min_length = 1,
+    options = list()) {
   opts <- modifyList(
     list(
       limit = items,
       minLength = min_length,
-      hint = FALSE #TODO: Hints are broken for now
+      hint = FALSE # TODO: Hints are broken for now
     ),
     options
   )
@@ -82,12 +81,11 @@ typeaheadInput <- function(
 #' @param value Character string or NULL. New selected value (optional).
 #' @export
 updateTypeaheadInput <- function(
-  session = shiny::getDefaultReactiveDomain(),
-  inputId,
-  label = NULL,
-  choices = NULL,
-  value = NULL
-) {
+    session = shiny::getDefaultReactiveDomain(),
+    inputId,
+    label = NULL,
+    choices = NULL,
+    value = NULL) {
   # emulate shiny:::validate_session_object()
   if (
     !inherits(session, c("ShinySession", "MockShinySession", "session_proxy"))
