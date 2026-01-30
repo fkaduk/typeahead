@@ -12,6 +12,9 @@ It wraps the typeahead-standalone JavaScript library
 to deliver both server and client-side type-ahead functionality
 with dropdown and inline suggestions.
 
+- Default styling and API matches the familiar `selectInput` component
+- Supports bootstrap 5 theming via [`bslib`]("https://cran.r-project.org/web/packages/bslib/index.html")
+
 ## Installation
 
 The development version can be installed from
