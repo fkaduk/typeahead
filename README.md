@@ -10,7 +10,7 @@
 The `typeahead` package provides a versatile autocomplete text input component
 for R Shiny applications or R markdown.
 It wraps the typeahead-standalone JavaScript library
-to deliver both client-side type-ahead functionality
+to deliver both server and client-side type-ahead functionality
 with dropdown and inline suggestions.
 
 ## Installation
@@ -50,30 +50,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-## Local Testing
+## Development
 
-`shinytest2` requires Chrome/Chromium for browser testing.
-
-### On Host
-
-Local testing on ubuntu requires to set:
-
-```bash
-export CHROMOTE_CHROME="/home/$USER/.cache/R/chromote/chrome/131.0.6778.85/chrome-headless-shell-linux64/chrome-headless-shell"
-export CHROMOTE_CHROME_ARGS="--no-sandbox --no-proxy-server --disable-dev-shm-usage --disable-gpu --remote-debugging-port=9222"
-```
-
-### Docker
-
-Another option is to run the tests in a container:
-
-```bash
-docker build -t typeahead-test . 
-
-docker run --rm -v "$(pwd):/pkg" typeahead-test R -e "setwd('/pkg'); devtools::install_deps(dependencies = TRUE); devtools::install(); devtools::test()"
-```
-
-# TODO
-
-- [ ] Suppress Shiny autoload warning during shinytest2 testing
+Check out the Makefile for some common operations that help development.
 
