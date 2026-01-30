@@ -1,4 +1,5 @@
 library(shiny)
+library(bslib)
 library(typeahead)
 
 cities <- c(
@@ -51,21 +52,23 @@ cities <- c(
   "Zurich"
 )
 
-ui <- fluidPage(
-  titlePanel("typeahead demo"),
-  sidebarLayout(
-    sidebarPanel(
-      actionButton("update", "Switch to fruits")
-    ),
-    mainPanel(
-      h4("Selected value:"),
-      verbatimTextOutput("selected"),
+ui <- page_sidebar(
+  title = "typeahead demo",
+  theme = bs_theme(version = 5, bootswatch = "flatly"),
+  sidebar = sidebar(
+    actionButton("update", "Switch to fruits")
+  ),
+  card(
+    card_header("typeahead input"),
+    card_body(
       typeaheadInput(
         inputId = "city",
         label = "Choose a city:",
         choices = cities,
         placeholder = "Start typing..."
       ),
+      h4("Selected value:"),
+      verbatimTextOutput("selected")
     )
   )
 )
