@@ -1,4 +1,3 @@
-
 # typeahead
 
 <!-- badges: start -->
