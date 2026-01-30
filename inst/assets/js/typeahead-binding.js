@@ -2,8 +2,7 @@
 // Assumes typeahead-standalone UMD (window.typeahead) + jQuery.
 
 (function () {
-  // Toggle this to silence logs
-  const DEBUG = true;
+  const DEBUG = false;
   const log = (...args) => {
     if (DEBUG) console.debug("[typeahead]", ...args);
   };
