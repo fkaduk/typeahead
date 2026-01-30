@@ -3,8 +3,8 @@
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/fkaduk/typahead/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fkaduk/typahead/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/fkaduk/typahead/graph/badge.svg)](https://app.codecov.io/gh/fkaduk/typahead)
+[![R-CMD-check](https://github.com/fkaduk/typeahead/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fkaduk/typeahead/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/fkaduk/typeahead/graph/badge.svg)](https://app.codecov.io/gh/fkaduk/typeahead)
 <!-- badges: end -->
 
 The `typeahead` package provides a versatile autocomplete text input component
@@ -19,7 +19,7 @@ The development version can be installed from
 [GitHub](https://github.com/fkaduk/typeahead) via
 
 ```r
-devtools::install_github("fkaduk/typahead")
+devtools::install_github("fkaduk/typeahead")
 ```
 
 ## Example
