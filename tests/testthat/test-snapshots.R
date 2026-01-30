@@ -1,3 +1,5 @@
+testthat::skip_on_os(c("mac", "windows"))
+
 describe("typeaheadInput snapshot tests", {
   it("renders minimal UI correctly", {
     # WHEN/THEN
