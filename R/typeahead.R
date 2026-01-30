@@ -1,7 +1,7 @@
 #' @title typeahead-standalone dependency
 #' @description Registers JS + CSS with Shiny
 #' @importFrom utils modifyList
-dependency_typeahead_standalone <- function() {
+dependency_typeahead <- function() {
   htmltools::htmlDependency(
     name = "typeahead-standalone",
     version = "5.4.0",
@@ -51,7 +51,7 @@ typeaheadInput <- function(
     options
   )
 
-  dep <- dependency_typeahead_standalone()
+  dep <- dependency_typeahead()
 
   input_tag <- htmltools::tags$input(
     id = inputId,
