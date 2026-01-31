@@ -16,22 +16,39 @@ new_app <- function(..., name) {
   )
 }
 
-describe("typeaheadInput screenshot tests", {
-  it("renders without suggestions", {
-    app <- new_app(
-      shinyApp(
-        ui = fluidPage(
-          typeaheadInput(
-            inputId = "test",
-            label = "Test Input",
-            choices = c("Apple", "Banana", "Cherry")
-          )
-        ),
-        server = function(...) {}
-      ),
-      name = "typeahead-basic"
-    )
+basic_ui <- function(...) {
+  fluidPage(
+    ...,
+    typeaheadInput(
+      inputId = "city",
+      label = "City",
+      choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
+      placeholder = "Start typing..."
+    ),
+    selectInput("country", "Country", choices = c("DE", "US", "ES", "BE"))
+  )
+}
 
+dark_ui <- function(...) {
+  bslib::page_fluid(
+    theme = bslib::bs_theme(version = 5, preset = "darkly"),
+    ...,
+    typeaheadInput(
+      inputId = "city",
+      label = "City",
+      choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
+      placeholder = "Start typing..."
+    ),
+    selectInput("country", "Country", choices = c("DE", "US", "ES", "BE"))
+  )
+}
+
+describe("typeaheadInput screenshot tests", {
+  it("renders idle state", {
+    app <- new_app(
+      shinyApp(ui = basic_ui(), server = function(...) {}),
+      name = "typeahead-idle"
+    )
     app$wait_for_idle()
     app$expect_screenshot()
     app$stop()
@@ -39,74 +56,55 @@ describe("typeaheadInput screenshot tests", {
 
   it("renders with suggestions", {
     app <- new_app(
-      shinyApp(
-        ui = fluidPage(
-          typeaheadInput(
-            inputId = "test",
-            label = "Test Input",
-            choices = c("Apple", "Apricot", "Banana", "Cherry"),
-            placeholder = "Start typing..."
-          )
-        ),
-        server = function(...) {}
-      ),
+      shinyApp(ui = basic_ui(), server = function(...) {}),
       name = "typeahead-suggestions"
     )
-
-    app$run_js(js_input_event_set("test", "A"))
+    app$run_js(js_input_event_set("city", "B"))
     app$wait_for_idle()
     app$expect_screenshot()
     app$stop()
   })
 
-  it("renders alongside other elements", {
+  it("renders with selectInput open", {
     app <- new_app(
-      shinyApp(
-        ui = fluidPage(
-          h3("Form"),
-          textInput("name", "Name"),
-          typeaheadInput(
-            inputId = "test",
-            label = "City",
-            choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
-            placeholder = "Start typing..."
-          ),
-          selectInput("country", "Country", choices = c("DE", "US", "ES", "BE")),
-          textInput("notes", "Notes")
-        ),
-        server = function(...) {}
-      ),
-      name = "typeahead-with-elements"
+      shinyApp(ui = basic_ui(), server = function(...) {}),
+      name = "typeahead-select-open"
     )
-
-    app$run_js(js_input_event_set("test", "B"))
+    app$run_js('document.querySelector("#country-selectized").focus();
+                document.querySelector("#country + .selectize-control .selectize-input").click();')
     app$wait_for_idle()
     app$expect_screenshot()
     app$stop()
   })
 
-  it("renders with bslib Bootstrap 5 dark theme", {
+  it("renders idle state in dark theme", {
     app <- new_app(
-      shinyApp(
-        ui = bslib::page_fluid(
-          theme = bslib::bs_theme(version = 5, preset = "darkly"),
-          h3("Form"),
-          textInput("name", "Name"),
-          typeaheadInput(
-            inputId = "test",
-            label = "City",
-            choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
-            placeholder = "Start typing..."
-          ),
-          selectInput("country", "Country", choices = c("DE", "US", "ES", "BE")),
-          textInput("notes", "Notes")
-        ),
-        server = function(...) {}
-      ),
-      name = "typeahead-bslib"
+      shinyApp(ui = dark_ui(), server = function(...) {}),
+      name = "typeahead-dark-idle"
     )
+    app$wait_for_idle()
+    app$expect_screenshot()
+    app$stop()
+  })
 
-    app$run_js(js_input_event_set("test", "B"))
+  it("renders with suggestions in dark theme", {
+    app <- new_app(
+      shinyApp(ui = dark_ui(), server = function(...) {}),
+      name = "typeahead-dark-suggestions"
+    )
+    app$run_js(js_input_event_set("city", "B"))
+    app$wait_for_idle()
+    app$expect_screenshot()
+    app$stop()
+  })
+
+  it("renders with selectInput open in dark theme", {
+    app <- new_app(
+      shinyApp(ui = dark_ui(), server = function(...) {}),
+      name = "typeahead-dark-select-open"
+    )
+    app$run_js('document.querySelector("#country-selectized").focus();
+                document.querySelector("#country + .selectize-control .selectize-input").click();')
     app$wait_for_idle()
     app$expect_screenshot()
     app$stop()
