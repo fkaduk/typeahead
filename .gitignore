@@ -10,3 +10,4 @@ inst/doc
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
 *_.new.png
 .docker-build
+inst/examples/app_cache
