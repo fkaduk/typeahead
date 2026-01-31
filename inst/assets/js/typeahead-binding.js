@@ -1,6 +1,3 @@
-// typeahead-binding.js
-// Assumes typeahead-standalone UMD (window.typeahead) + jQuery.
-
 (function () {
   const DEBUG = false;
   const log = (...args) => {
