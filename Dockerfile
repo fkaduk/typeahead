@@ -42,6 +42,9 @@ ENV CHROMOTE_CHROME_ARGS="--no-sandbox --no-proxy-server --disable-dev-shm-usage
 # Install R package dependencies
 RUN R -e "install.packages('devtools')"
 
+# Allow non-root users to install R packages (for --user docker runs)
+RUN chmod -R a+w /usr/local/lib/R/site-library
+
 # Set working directory
 WORKDIR /pkg
 

@@ -1,7 +1,7 @@
 .PHONY: test check lint document style demo shell bash clean help
 
 DOCKER_IMAGE := typeahead-test
-DOCKER_RUN := docker run --rm -v "$$(pwd):/pkg" $(DOCKER_IMAGE)
+DOCKER_RUN := docker run --rm --user "$$(id -u):$$(id -g)" -v "$$(pwd):/pkg" $(DOCKER_IMAGE)
 SENTINEL := .docker-build
 
 help: ## Show this help
