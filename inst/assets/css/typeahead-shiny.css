@@ -9,8 +9,6 @@
   position: relative;
 }
 .typeahead-standalone .tt-hint {
-  position: absolute;
-  left: 0;
   cursor: default;
   user-select: none;
   background: var(--bs-body-bg, #fff);

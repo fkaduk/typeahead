@@ -38,4 +38,38 @@ describe("typeaheadInput unit tests", {
 
     expect_s3_class(minimal_input, "shiny.tag.list")
   })
+
+  it("disables hint by default", {
+    # WHEN
+    input <- typeaheadInput(inputId = "no_hint", choices = c("A", "B"))
+
+    # THEN
+    input_str <- as.character(input)
+    opts <- jsonlite::fromJSON(
+      regmatches(input_str, regexpr('data-options="([^"]*)"', input_str))
+      |> sub(pattern = 'data-options="', replacement = "")
+      |> sub(pattern = '"$', replacement = "")
+      |> gsub(pattern = "&quot;", replacement = '"')
+    )
+    expect_false(opts$hint)
+  })
+
+  it("enables hint when hint = TRUE", {
+    # WHEN
+    input <- typeaheadInput(
+      inputId = "with_hint",
+      choices = c("apple", "banana"),
+      hint = TRUE
+    )
+
+    # THEN
+    input_str <- as.character(input)
+    opts <- jsonlite::fromJSON(
+      regmatches(input_str, regexpr('data-options="([^"]*)"', input_str))
+      |> sub(pattern = 'data-options="', replacement = "")
+      |> sub(pattern = '"$', replacement = "")
+      |> gsub(pattern = "&quot;", replacement = '"')
+    )
+    expect_true(opts$hint)
+  })
 })

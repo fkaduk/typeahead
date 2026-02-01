@@ -23,7 +23,8 @@ basic_ui <- function(...) {
       inputId = "city",
       label = "City",
       choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
-      placeholder = "Start typing..."
+      placeholder = "Start typing...",
+      hint = TRUE
     ),
     selectInput("country", "Country", choices = c("DE", "US", "ES", "BE"))
   )
@@ -37,7 +38,8 @@ dark_ui <- function(...) {
       inputId = "city",
       label = "City",
       choices = c("Berlin", "Boston", "Barcelona", "Brussels"),
-      placeholder = "Start typing..."
+      placeholder = "Start typing...",
+      hint = TRUE
     ),
     selectInput("country", "Country", choices = c("DE", "US", "ES", "BE"))
   )

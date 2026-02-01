@@ -9,7 +9,7 @@
 
 ## possible extension
 
-- [ ] add `hint` parameter for auto-completion hints (requires fixing Bootstrap CSS positioning issues!)
+- [x] add `hint` parameter for auto-completion hints
 - [ ] make it possible for the typeahead input to load remote data
 - [ ] add `reactive_on` parameter to control when shiny reactivity triggers (e.g., "selection", "input", "debounced")
 - [ ] enable `server`-side processing

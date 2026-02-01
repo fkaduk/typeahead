@@ -82,6 +82,15 @@
         },
       });
 
+      // Workaround: typeahead-standalone clones the input to create the hint
+      // element, then overwrites className (to just "tt-hint"), stripping
+      // Bootstrap's "form-control" class. This causes the hint text to lose
+      // its padding/font and misalign with the typed text. Re-add it here.
+      const hint = el.parentNode?.querySelector(".tt-hint");
+      if (hint) {
+        hint.classList.add("form-control");
+      }
+
       setInstance(el, inst);
       log("initialize done", {
         id: el.id,

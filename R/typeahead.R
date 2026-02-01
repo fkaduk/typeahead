@@ -28,6 +28,8 @@ dependency_typeahead <- function() {
 #' @param placeholder Character string or NULL. Placeholder text shown when input is empty.
 #' @param items Integer. Maximum number of suggestions to display in dropdown (default 8).
 #' @param min_length Integer. Minimum number of characters required before showing suggestions (default 1).
+#' @param hint Logical. If TRUE, shows an inline suggestion (ghost text) that
+#'   completes the current input based on the best match (default FALSE).
 #' @param options List. Additional options passed to the typeahead.js library.
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
@@ -40,12 +42,13 @@ typeaheadInput <- function(
     placeholder = NULL,
     items = 8,
     min_length = 1,
+    hint = FALSE,
     options = list()) {
   opts <- modifyList(
     list(
       limit = items,
       minLength = min_length,
-      hint = FALSE # TODO: Hints are broken for now
+      hint = hint
     ),
     options
   )
