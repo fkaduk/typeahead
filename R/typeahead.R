@@ -101,7 +101,7 @@ updateTypeaheadInput <- function(
   }
   msg <- list(
     label = label,
-    choices = choices,
+    choices = if (!is.null(choices)) as.list(choices) else NULL,
     value = if (!is.null(value)) as.character(value) else NULL
   )
   session$sendInputMessage(

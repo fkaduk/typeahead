@@ -20,16 +20,15 @@ describe("updateTypeaheadInput unit tests", {
     )
   })
 
-  it("sends dynamically computed choices without error", {
+  it("sends length-1 choices as a list so it serializes to a JSON array", {
+    captured <- NULL
     session <- shiny::MockShinySession$new()
-    val <- "12"
-    last_digit <- as.integer(substr(val, nchar(val), nchar(val)))
-    next_digit <- (last_digit %% 9) + 1
-    suggestion <- paste0(val, next_digit)
-    expect_equal(suggestion, "123")
-    expect_no_error(
-      updateTypeaheadInput(session, "test", choices = suggestion)
-    )
+    session$sendInputMessage <- function(inputId, message) {
+      captured <<- message
+    }
+    updateTypeaheadInput(session, "test", choices = "only-one")
+    expect_type(captured$choices, "list")
+    expect_equal(captured$choices, list("only-one"))
   })
 
   it("errors without a valid session", {
