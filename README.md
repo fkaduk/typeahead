@@ -9,10 +9,10 @@
 The `typeahead` package provides a versatile autocomplete text input component
 for R Shiny applications or interactive code chunks in R markdown.
 
-- [ ] API and default styling match the familiar `selectInput` component
-- [ ] Supports bootstrap 5 theming via [`bslib`]("https://cran.r-project.org/web/packages/bslib/index.html")
+- API and default styling match the familiar `selectInput` component
+- Supports bootstrap 5 theming via [`bslib`]("https://cran.r-project.org/web/packages/bslib/index.html")
+- Displays suggestions inline hints and/or dropdown
 - [ ] Suggestions can be supplied from server or client-side
-- [ ] Displays suggestions inline or as dropdown
 - [ ] Rich display formatting of dropdown suggestions via custom templates
 
 ## Installation
