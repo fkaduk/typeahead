@@ -57,7 +57,8 @@ ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   sidebar = sidebar(
     actionButton("update", "Switch to fruits"),
-    actionButton("update_cities", "Switch to cities")
+    actionButton("update_cities", "Switch to cities"),
+    actionButton("update_numbers", "Switch to numbers")
   ),
   card(
     card_header("typeahead input"),
@@ -79,7 +80,10 @@ server <- function(input, output, session) {
     input$city
   })
 
+  mode <- reactiveVal("cities")
+
   observeEvent(input$update_cities, {
+    mode("cities")
     updateTypeaheadInput(
       session = session,
       inputId = "city",
@@ -87,7 +91,33 @@ server <- function(input, output, session) {
     )
   })
 
+  observeEvent(input$update_numbers, {
+    mode("numbers")
+    updateTypeaheadInput(
+      session = session,
+      inputId = "city",
+      choices = as.character(1:9)
+    )
+  })
+
+  observe({
+    req(mode() == "numbers")
+    val <- input$city
+    req(nzchar(val))
+    last_char <- substr(val, nchar(val), nchar(val))
+    last_digit <- suppressWarnings(as.integer(last_char))
+    req(!is.na(last_digit))
+    next_digit <- (last_digit %% 9) + 1
+    suggestion <- paste0(val, next_digit)
+    updateTypeaheadInput(
+      session = session,
+      inputId = "city",
+      choices = suggestion
+    )
+  })
+
   observeEvent(input$update, {
+    mode("fruits")
     updateTypeaheadInput(
       session = session,
       inputId = "city",
