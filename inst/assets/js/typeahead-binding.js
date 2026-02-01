@@ -6,48 +6,60 @@
   const warn = (...args) => {
     if (DEBUG) console.warn("[typeahead]", ...args);
   };
-  const err = (...args) => console.error("[typeahead]", ...args);
+
+  const aa = window["@algolia/autocomplete-js"];
+  if (!aa || !aa.autocomplete) {
+    console.error("[typeahead] @algolia/autocomplete-js not found");
+    return;
+  }
+  const { autocomplete } = aa;
 
   function parseJSONAttr(el, attr, fallback) {
     const raw = el.getAttribute(attr);
-    log("parseJSONAttr", { id: el.id, attr, raw });
     if (!raw) return fallback;
     try {
-      const v = JSON.parse(raw);
-      log("parseJSONAttr OK", { id: el.id, attr, type: typeof v, sample: v });
-      return v;
+      return JSON.parse(raw);
     } catch (e) {
-      warn("parseJSONAttr FAIL", { id: el.id, attr, raw, error: e });
+      warn("parseJSONAttr FAIL", { id: el.id, attr, error: e });
       return fallback;
     }
   }
 
+  function getInput(el) {
+    return el.querySelector(".aa-Input");
+  }
+
   function getInstance(el) {
-    return el.__ta_instance__ || null;
+    return el.__aa_instance__ || null;
   }
   function setInstance(el, inst) {
-    el.__ta_instance__ = inst;
+    el.__aa_instance__ = inst;
   }
   function destroyInstance(el) {
     const inst = getInstance(el);
     if (inst && typeof inst.destroy === "function") {
-      log("destroyInstance", el.id);
       try {
         inst.destroy();
       } catch (e) {
         warn("destroyInstance error", e);
       }
     }
-    el.__ta_instance__ = null;
+    el.__aa_instance__ = null;
+    el.__aa_choices__ = null;
+  }
+
+  function normalize(str) {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
   }
 
   const binding = new Shiny.InputBinding();
 
   $.extend(binding, {
     find(scope) {
-      const $els = $(scope).find("input.typeahead-standalone");
-      log("find", { count: $els.length });
-      return $els;
+      return $(scope).find("div.typeahead-container");
     },
 
     getId(el) {
@@ -55,130 +67,111 @@
     },
 
     initialize(el) {
-      log("initialize start", { id: el.id, value: el.value });
       const options = parseJSONAttr(el, "data-options", {}) || {};
-      const local = parseJSONAttr(el, "data-source", []) || [];
+      const choices = parseJSONAttr(el, "data-source", []) || [];
+      const initialValue = el.getAttribute("data-value") || "";
+      const placeholder = el.getAttribute("data-placeholder") || "";
+      const limit = options.limit || 8;
+      const minLength = options.minLength || 1;
 
-      const inst = window.typeahead({
-        input: el,
-        source: { local },
-        ...options,
-        onSelect: (item) => {
-          const t = typeof item;
-          log("onSelect", { id: el.id, typeof: t, item });
-          // Force a primitive string for Shiny
-          const str =
-            t === "string"
-              ? item
-              : (item &&
-                  (item.label ??
-                    item.value ??
-                    (item.toString && item.toString()))) ||
-                "";
-          el.value = String(str);
-          log("onSelect -> set el.value", { id: el.id, value: el.value });
-          // notify Shiny without payload
-          $(el).trigger("input");
+      el.__aa_choices__ = choices;
+
+      const inst = autocomplete({
+        container: el,
+        placeholder: placeholder,
+        openOnFocus: false,
+        initialState: {
+          query: initialValue,
+        },
+        getSources: ({ query }) => {
+          if (query.length < minLength) return [];
+          const q = normalize(query);
+          const items = (el.__aa_choices__ || [])
+            .filter((item) => normalize(item).includes(q))
+            .slice(0, limit)
+            .map((item) => ({ label: item }));
+          return [
+            {
+              sourceId: "local",
+              getItems: () => items,
+              getItemInputValue: ({ item }) => item.label,
+              templates: {
+                item: ({ item, html }) => {
+                  return html`<div class="aa-ItemContent">${item.label}</div>`;
+                },
+              },
+            },
+          ];
+        },
+        onStateChange: ({ state, prevState }) => {
+          if (state.query !== prevState.query) {
+            log("stateChange", { id: el.id, query: state.query });
+            $(el).trigger("change");
+          }
         },
       });
 
       setInstance(el, inst);
-      log("initialize done", {
-        id: el.id,
-        local_size: Array.isArray(local) ? local.length : null,
-      });
+      log("initialize done", { id: el.id, choices: choices.length });
     },
 
     getValue(el) {
-      const v = el.value || "";
-      log("getValue", { id: el.id, type: typeof v, value: v });
-      // MUST be a primitive; object here triggers "Unexpected input value mode"
-      return v;
+      const input = getInput(el);
+      return input ? input.value || "" : "";
     },
 
     setValue(el, value) {
-      const v = value == null ? "" : String(value);
-      log("setValue", {
-        id: el.id,
-        incoming_type: typeof value,
-        incoming: value,
-        set: v,
-      });
-      el.value = v;
+      const inst = getInstance(el);
+      if (inst) {
+        inst.setQuery(value == null ? "" : String(value));
+      }
     },
 
     receiveMessage(el, data) {
-      log("receiveMessage START", { id: el.id, data });
+      log("receiveMessage", { id: el.id, data });
+
+      if (Object.prototype.hasOwnProperty.call(data, "choices")) {
+        const arr = Array.isArray(data.choices) ? data.choices : [];
+        el.__aa_choices__ = arr;
+        el.setAttribute("data-source", JSON.stringify(arr));
+        const inst = getInstance(el);
+        if (inst) {
+          inst.refresh();
+        }
+      }
 
       if (Object.prototype.hasOwnProperty.call(data, "value")) {
         this.setValue(el, data.value);
       }
-      if (Object.prototype.hasOwnProperty.call(data, "choices")) {
-        const arr = Array.isArray(data.choices) ? data.choices : [];
-        log("receiveMessage choices", {
-          id: el.id,
-          len: arr.length,
-          sample: arr.slice(0, 5),
-        });
-        el.setAttribute("data-source", JSON.stringify(arr));
 
-        const inst = getInstance(el);
-        if (inst) {
-          log("receiveMessage reset+addToIndex", { id: el.id });
-          const currentValue = el.value;
-          inst.reset(true);
-          inst.addToIndex(arr);
-          // reset() clears el.value; restore and dispatch a native
-          // InputEvent so the library re-searches with the current query
-          el.value = currentValue;
-          el.dispatchEvent(
-            new InputEvent("input", {
-              bubbles: true,
-              inputType: "insertText",
-              data: currentValue,
-            }),
-          );
-        }
-      }
-
-      // Notify Shiny that the value may have changed
-      $(el).trigger("input");
-      log("receiveMessage END", { id: el.id, value: el.value });
+      $(el).trigger("change");
     },
 
     subscribe(el, callback) {
       log("subscribe", { id: el.id });
-      const $el = $(el);
-      const handler = (ev) => {
-        // DO NOT pass arguments to callback; Shiny expects none
-        log("event -> callback()", {
-          id: el.id,
-          ev: ev.type,
-          value: el.value,
-          type: typeof el.value,
-        });
-        try {
-          callback();
-        } catch (e) {
-          err("callback error", e);
-        }
-      };
-      $el.on("input.typeaheadBinding change.typeaheadBinding", handler);
-      el.__ta_handler__ = handler;
+      $(el).on("change.typeaheadBinding", () => {
+        callback();
+      });
 
-      // Extra: log focus/blur for debugging
-      $el.on("focus.typeaheadBinding blur.typeaheadBinding", (ev) =>
-        log("event", { id: el.id, ev: ev.type, value: el.value }),
-      );
+      // Also listen for direct input on the Algolia input
+      const input = getInput(el);
+      if (input) {
+        $(input).on("input.typeaheadBinding", () => {
+          callback();
+        });
+      }
     },
 
     unsubscribe(el) {
       log("unsubscribe", { id: el.id });
       $(el).off(".typeaheadBinding");
+      const input = getInput(el);
+      if (input) {
+        $(input).off(".typeaheadBinding");
+      }
       destroyInstance(el);
-      el.__ta_handler__ = null;
     },
   });
 
-  Shiny.inputBindings.register(binding, "typeahead.standalone.debug");
+  Shiny.inputBindings.register(binding, "typeahead.algolia");
 })();

@@ -1,17 +1,17 @@
-#' @title typeahead-standalone dependency
+#' @title Algolia autocomplete dependency
 #' @description Registers JS + CSS with Shiny
 #' @importFrom utils modifyList
 dependency_typeahead <- function() {
   htmltools::htmlDependency(
-    name = "typeahead-standalone",
-    version = "5.4.0",
+    name = "algolia-autocomplete",
+    version = "1.19.4",
     src = c(file = "assets"),
     script = c(
-      "lib/typeahead-standalone/typeahead-standalone.umd.js",
+      "lib/algolia-autocomplete/index.production.js",
       "js/typeahead-binding.js"
     ),
     stylesheet = c(
-      "lib/typeahead-standalone/basic.css",
+      "lib/algolia-autocomplete/theme.min.css",
       "css/typeahead-shiny.css"
     ),
     package = "typeahead"
@@ -28,7 +28,7 @@ dependency_typeahead <- function() {
 #' @param placeholder Character string or NULL. Placeholder text shown when input is empty.
 #' @param items Integer. Maximum number of suggestions to display in dropdown (default 8).
 #' @param min_length Integer. Minimum number of characters required before showing suggestions (default 1).
-#' @param options List. Additional options passed to the typeahead.js library.
+#' @param options List. Additional options passed to the autocomplete library.
 #' @return A shiny.tag.list object containing the HTML input element with attached dependencies.
 #' @export
 typeaheadInput <- function(
@@ -44,23 +44,20 @@ typeaheadInput <- function(
   opts <- modifyList(
     list(
       limit = items,
-      minLength = min_length,
-      hint = FALSE # TODO: Hints are broken for now
+      minLength = min_length
     ),
     options
   )
 
   dep <- dependency_typeahead()
 
-  input_tag <- htmltools::tags$input(
+  container <- htmltools::tags$div(
     id = inputId,
-    type = "text",
-    class = "typeahead-standalone form-control",
-    autocomplete = "off",
-    value = value %||% "",
+    class = "typeahead-container",
     `data-source` = jsonlite::toJSON(choices, auto_unbox = TRUE),
     `data-options` = jsonlite::toJSON(opts, auto_unbox = TRUE, null = "null"),
-    placeholder = placeholder,
+    `data-value` = value %||% "",
+    `data-placeholder` = placeholder %||% "",
     style = if (!is.null(width)) {
       sprintf("width:%s;", shiny::validateCssUnit(width))
     }
@@ -68,7 +65,7 @@ typeaheadInput <- function(
 
   htmltools::tagList(
     if (!is.null(label)) htmltools::tags$label(`for` = inputId, label),
-    htmltools::attachDependencies(input_tag, dep)
+    htmltools::attachDependencies(container, dep)
   )
 }
 

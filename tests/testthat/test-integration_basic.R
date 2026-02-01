@@ -22,11 +22,11 @@ describe("typeaheadInput - filtering logic", {
     # THEN
     expect_true(app$get_js('document.getElementById("empty") !== null'))
     expect_equal(
-      app$get_js('document.getElementById("empty").value'),
+      app$get_js('document.querySelector("#empty .aa-Input").value'),
       "A"
     )
     expect_equal(
-      app$get_js('document.querySelectorAll(".tt-suggestion").length'),
+      app$get_js('document.querySelectorAll(".aa-Item").length'),
       0
     )
     app$stop()
@@ -48,11 +48,11 @@ describe("typeaheadInput - filtering logic", {
 
     # WHEN
     app$run_js(js_input_event_set("city", "B"))
-    expect_equal(app$get_js('document.getElementById("city").value'), "B")
+    app$wait_for_js(js_wait_for_suggestions())
 
     # THEN
     expect_equal(
-      app$get_js('document.querySelectorAll(".tt-suggestion").length'),
+      app$get_js('document.querySelectorAll(".aa-Item").length'),
       4
     )
     app$stop()
@@ -74,11 +74,15 @@ describe("typeaheadInput - filtering logic", {
 
     # WHEN
     app$run_js(js_input_event_set("city", "Ber"))
+    app$wait_for_js(js_wait_for_suggestions())
 
     # THEN
-    expect_equal(app$get_js('document.getElementById(\"city\").value'), "Ber")
     expect_equal(
-      app$get_js('document.querySelectorAll(\".tt-suggestion\").length'),
+      app$get_js('document.querySelector("#city .aa-Input").value'),
+      "Ber"
+    )
+    expect_equal(
+      app$get_js('document.querySelectorAll(".aa-Item").length'),
       1
     )
 
@@ -101,12 +105,17 @@ describe("typeaheadInput - filtering logic", {
 
     # WHEN
     app$run_js(js_input_event_set("city", "B"))
+    app$wait_for_js(js_wait_for_suggestions())
     app$run_js(js_input_event_set("city", "Be"))
+    Sys.sleep(0.3) # allow re-filter
 
     # THEN
-    expect_equal(app$get_js('document.getElementById(\"city\").value'), "Be")
     expect_equal(
-      app$get_js('document.querySelectorAll(\".tt-suggestion\").length'),
+      app$get_js('document.querySelector("#city .aa-Input").value'),
+      "Be"
+    )
+    expect_equal(
+      app$get_js('document.querySelectorAll(".aa-Item").length'),
       1
     )
 
@@ -148,16 +157,18 @@ describe("updateTypeaheadInput - basic", {
 
     # WHEN - Type "A" to see original suggestions
     app$run_js(js_input_event_set("test", "A"))
+    app$wait_for_js(js_wait_for_suggestions())
     original_count <- app$get_js(
-      'document.querySelectorAll(".tt-suggestion").length'
+      'document.querySelectorAll(".aa-Item").length'
     )
 
     # Click button to change suggestions and wait for server round-trip
     app$click("change")
     app$wait_for_idle()
+    Sys.sleep(0.3) # allow refresh
 
     new_count <- app$get_js(
-      'document.querySelectorAll(".tt-suggestion").length'
+      'document.querySelectorAll(".aa-Item").length'
     )
 
     # THEN - Should show new suggestions
@@ -203,12 +214,4 @@ describe("updateTypeaheadInput - basic", {
 #   it("supports RTL text entry (Arabic, Hebrew)", { })
 #   it("renders correctly in IE 11 polyfilled & WebKit mobile", { })
 #   it("fails loudly on malformed dataset JSON", { })
-# })
-#
-# describe("E2E — user journeys", {
-#   it("selects a suggestion and submits the form", { })
-#   it("passes axe-core audit (desktop view)", { })
-#   it("passes axe-core audit (mobile view)", { })
-#   it("matches visual snapshots (Percy) across Chrome/Firefox/WebKit", { })
-#   it("handles slow network with loading skeleton", { })
 # })
