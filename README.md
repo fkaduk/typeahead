@@ -14,7 +14,7 @@ for R Shiny applications or interactive code chunks in R markdown.
 - Displays suggestions inline hints and/or dropdown
 - Live updating of suggestions
 - [ ] Suggestions can be supplied from server or client-side
-- [ ] Rich display formatting of dropdown suggestions via custom templates
+- Rich display formatting of dropdown suggestions via custom html
 
 ## Installation
 
