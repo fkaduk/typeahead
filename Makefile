@@ -26,8 +26,32 @@ document: $(SENTINEL) ## Generate documentation with roxygen2
 style: $(SENTINEL) ## Format code with styler
 	$(DOCKER_RUN) R -e "setwd('/pkg'); install.packages('styler'); styler::style_pkg()"
 
-demo: $(SENTINEL) ## Run the demo app in Docker
-	docker run --rm -it -p 3838:3838 -v "$$(pwd):/pkg" $(DOCKER_IMAGE) R -e "setwd('/pkg'); devtools::install(); shiny::runApp('inst/examples', port = 3838, host = '0.0.0.0')"
+CONTAINER_NAME := typeahead-demo
+WATCH_DIRS := R inst
+
+demo: $(SENTINEL) ## Run the demo app with auto-reload on file changes
+	@trap 'docker stop $(CONTAINER_NAME) 2>/dev/null; exit 0' INT TERM; \
+	docker stop $(CONTAINER_NAME) 2>/dev/null || true; \
+	fingerprint() { find $(WATCH_DIRS) -type f \( -name '*.R' -o -name '*.js' -o -name '*.css' \) -exec stat --format='%n %Y' {} + 2>/dev/null | sort; }; \
+	start_app() { \
+		echo ">> Installing package and starting app on http://localhost:3838 ..."; \
+		docker run --rm -d --name $(CONTAINER_NAME) -p 3838:3838 -v "$$(pwd):/pkg" $(DOCKER_IMAGE) \
+			R -e "setwd('/pkg'); devtools::install(quick=TRUE); shiny::runApp('inst/examples', port=3838, host='0.0.0.0')" > /dev/null; \
+	}; \
+	start_app; \
+	last=$$(fingerprint); \
+	echo ">> Watching $(WATCH_DIRS) for changes (poll every 2s). Ctrl-C to stop."; \
+	while true; do \
+		sleep 2; \
+		current=$$(fingerprint); \
+		if [ "$$current" != "$$last" ]; then \
+			echo ">> Change detected, restarting..."; \
+			docker stop $(CONTAINER_NAME) 2>/dev/null || true; \
+			sleep 1; \
+			start_app; \
+			last=$$current; \
+		fi; \
+	done
 
 shell: $(SENTINEL) ## Open R shell in Docker container
 	docker run --rm -it -v "$$(pwd):/pkg" $(DOCKER_IMAGE) R
