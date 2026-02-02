@@ -61,3 +61,4 @@ Check out the Makefile for some common operations that help development.
 
 - add gifs/videos to README
 - add screenshots to README based on screenshot tests
+- fix styling/layout issues
