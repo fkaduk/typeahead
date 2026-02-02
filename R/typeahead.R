@@ -53,6 +53,14 @@ typeaheadInput <- function(
     options
   )
 
+  if (!is.null(names(choices))) {
+    choices <- mapply(
+      function(nm, html) list(label = nm, html = html),
+      names(choices), unname(choices),
+      SIMPLIFY = FALSE, USE.NAMES = FALSE
+    )
+  }
+
   dep <- dependency_typeahead()
 
   input_tag <- htmltools::tags$input(
@@ -99,9 +107,19 @@ updateTypeaheadInput <- function(
       call. = FALSE
     )
   }
+  if (!is.null(choices) && !is.null(names(choices))) {
+    choices <- mapply(
+      function(nm, html) list(label = nm, html = html),
+      names(choices), unname(choices),
+      SIMPLIFY = FALSE, USE.NAMES = FALSE
+    )
+  } else if (!is.null(choices)) {
+    choices <- as.list(choices)
+  }
+
   msg <- list(
     label = label,
-    choices = if (!is.null(choices)) as.list(choices) else NULL,
+    choices = choices,
     value = if (!is.null(value)) as.character(value) else NULL
   )
   session$sendInputMessage(

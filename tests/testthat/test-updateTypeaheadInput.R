@@ -31,6 +31,34 @@ describe("updateTypeaheadInput unit tests", {
     expect_equal(captured$choices, list("only-one"))
   })
 
+  it("sends named choices as list of label/html objects", {
+    captured <- NULL
+    session <- shiny::MockShinySession$new()
+    session$sendInputMessage <- function(inputId, message) {
+      captured <<- message
+    }
+    updateTypeaheadInput(session, "test", choices = c(
+      "Berlin" = "<strong>Berlin</strong>",
+      "Boston" = "<strong>Boston</strong>"
+    ))
+    expect_type(captured$choices, "list")
+    expect_length(captured$choices, 2)
+    expect_equal(captured$choices[[1]]$label, "Berlin")
+    expect_equal(captured$choices[[1]]$html, "<strong>Berlin</strong>")
+    expect_equal(captured$choices[[2]]$label, "Boston")
+  })
+
+  it("sends unnamed choices as plain list of strings", {
+    captured <- NULL
+    session <- shiny::MockShinySession$new()
+    session$sendInputMessage <- function(inputId, message) {
+      captured <<- message
+    }
+    updateTypeaheadInput(session, "test", choices = c("A", "B"))
+    expect_type(captured$choices, "list")
+    expect_equal(captured$choices, list("A", "B"))
+  })
+
   it("errors without a valid session", {
     expect_error(
       updateTypeaheadInput(session = NULL, "test", choices = c("A")),

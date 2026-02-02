@@ -54,6 +54,58 @@ describe("typeaheadInput unit tests", {
     expect_false(opts$hint)
   })
 
+  it("converts named choices to label/html objects in data-source", {
+    # GIVEN
+    choices <- c(
+      "Berlin" = "<strong>Berlin</strong> <small>Germany</small>",
+      "Boston" = "<strong>Boston</strong> <small>USA</small>"
+    )
+
+    # WHEN
+    input <- typeaheadInput(inputId = "rich", choices = choices)
+    input_str <- as.character(input)
+
+    # THEN — extract data-source JSON
+    src_json <- regmatches(
+      input_str,
+      regexpr('data-source="([^"]*)"', input_str)
+    )
+    src_json <- sub('data-source="', "", src_json)
+    src_json <- sub('"$', "", src_json)
+    src_json <- gsub("&quot;", '"', src_json)
+    src_json <- gsub("&lt;", "<", src_json)
+    src_json <- gsub("&gt;", ">", src_json)
+    parsed <- jsonlite::fromJSON(src_json, simplifyVector = FALSE)
+
+    expect_type(parsed, "list")
+    expect_length(parsed, 2)
+    expect_equal(parsed[[1]]$label, "Berlin")
+    expect_true(grepl("<strong>Berlin</strong>", parsed[[1]]$html))
+    expect_equal(parsed[[2]]$label, "Boston")
+  })
+
+  it("keeps unnamed choices as a plain string array in data-source", {
+    # GIVEN
+    choices <- c("Apple", "Banana")
+
+    # WHEN
+    input <- typeaheadInput(inputId = "plain", choices = choices)
+    input_str <- as.character(input)
+
+    # THEN — extract data-source JSON
+    src_json <- regmatches(
+      input_str,
+      regexpr('data-source="([^"]*)"', input_str)
+    )
+    src_json <- sub('data-source="', "", src_json)
+    src_json <- sub('"$', "", src_json)
+    src_json <- gsub("&quot;", '"', src_json)
+    parsed <- jsonlite::fromJSON(src_json)
+
+    expect_type(parsed, "character")
+    expect_equal(parsed, c("Apple", "Banana"))
+  })
+
   it("enables hint when hint = TRUE", {
     # WHEN
     input <- typeaheadInput(

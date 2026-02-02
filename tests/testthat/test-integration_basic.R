@@ -122,6 +122,103 @@ describe("typeaheadInput - filtering logic", {
   it("allows free-text entries when `allowFreeText = TRUE`", {})
 })
 
+describe("typeaheadInput - rich display via named choices", {
+  it("renders HTML in suggestions and returns plain label on select", {
+    # GIVEN
+    app <- shinytest2::AppDriver$new(
+      shinyApp(
+        ui = fluidPage(
+          typeaheadInput(
+            inputId = "city",
+            choices = c(
+              "Berlin" = "<strong>Berlin</strong> <small>Germany</small>",
+              "Boston" = "<strong>Boston</strong> <small>USA</small>",
+              "Barcelona" = "<strong>Barcelona</strong> <small>Spain</small>"
+            )
+          ),
+          verbatimTextOutput("selected")
+        ),
+        server = function(input, output, session) {
+          output$selected <- renderText(input$city)
+        }
+      )
+    )
+
+    # WHEN — type "B" to trigger suggestions
+    app$run_js(js_input_event_set("city", "B"))
+
+    # THEN — should see 3 suggestions with HTML content
+    suggestion_count <- app$get_js(
+      'document.querySelectorAll(".tt-suggestion").length'
+    )
+    expect_equal(suggestion_count, 3)
+
+    # Verify HTML rendering: suggestion should contain <strong> tags
+    has_strong <- app$get_js(
+      'document.querySelector(".tt-suggestion strong") !== null'
+    )
+    expect_true(has_strong)
+
+    # WHEN — click first suggestion
+    app$run_js(
+      'document.querySelector(".tt-suggestion").click()'
+    )
+    app$wait_for_idle()
+
+    # THEN — input value should be plain label, not HTML
+    input_val <- app$get_js('document.getElementById("city").value')
+    expect_true(input_val %in% c("Berlin", "Boston", "Barcelona"))
+    expect_false(grepl("<strong>", input_val))
+
+    app$stop()
+  })
+
+  it("updates from plain to rich choices via updateTypeaheadInput", {
+    # GIVEN — start with plain choices
+    app <- shinytest2::AppDriver$new(
+      shinyApp(
+        ui = fluidPage(
+          typeaheadInput(
+            inputId = "city",
+            choices = c("Berlin", "Boston", "Barcelona")
+          ),
+          actionButton("switch_rich", "Switch to rich")
+        ),
+        server = function(input, output, session) {
+          observeEvent(input$switch_rich, {
+            updateTypeaheadInput(
+              session = session,
+              inputId = "city",
+              choices = c(
+                "Berlin" = "<strong>Berlin</strong> <small>Germany</small>",
+                "Boston" = "<strong>Boston</strong> <small>USA</small>"
+              )
+            )
+          })
+        }
+      )
+    )
+
+    # WHEN — switch to rich and type
+    app$click("switch_rich")
+    app$wait_for_idle()
+    app$run_js(js_input_event_set("city", "B"))
+
+    # THEN — should show 2 rich suggestions
+    suggestion_count <- app$get_js(
+      'document.querySelectorAll(".tt-suggestion").length'
+    )
+    expect_equal(suggestion_count, 2)
+
+    has_strong <- app$get_js(
+      'document.querySelector(".tt-suggestion strong") !== null'
+    )
+    expect_true(has_strong)
+
+    app$stop()
+  })
+})
+
 describe("updateTypeaheadInput - basic", {
   it("changes suggestions when button is pressed", {
     # GIVEN

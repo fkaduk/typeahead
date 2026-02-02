@@ -58,7 +58,8 @@ ui <- page_sidebar(
   sidebar = sidebar(
     actionButton("update", "Switch to fruits"),
     actionButton("update_cities", "Switch to cities"),
-    actionButton("update_numbers", "Switch to numbers")
+    actionButton("update_numbers", "Switch to numbers"),
+    actionButton("update_rich", "Switch to rich")
   ),
   card(
     card_header("typeahead input"),
@@ -113,6 +114,28 @@ server <- function(input, output, session) {
       session = session,
       inputId = "city",
       choices = suggestion
+    )
+  })
+
+  observeEvent(input$update_rich, {
+    mode("rich")
+    updateTypeaheadInput(
+      session = session,
+      inputId = "city",
+      choices = c(
+        "Berlin"    = "<strong>Berlin</strong> <small class='text-muted'>Germany</small>",
+        "Boston"    = "<strong>Boston</strong> <small class='text-muted'>USA</small>",
+        "Barcelona" = "<strong>Barcelona</strong> <small class='text-muted'>Spain</small>",
+        "Brussels"  = "<strong>Brussels</strong> <small class='text-muted'>Belgium</small>",
+        "Buenos Aires" = "<strong>Buenos Aires</strong> <small class='text-muted'>Argentina</small>",
+        "Cairo"     = "<strong>Cairo</strong> <small class='text-muted'>Egypt</small>",
+        "Chicago"   = "<strong>Chicago</strong> <small class='text-muted'>USA</small>",
+        "Copenhagen" = "<strong>Copenhagen</strong> <small class='text-muted'>Denmark</small>",
+        "Dublin"    = "<strong>Dublin</strong> <small class='text-muted'>Ireland</small>",
+        "London"    = "<strong>London</strong> <small class='text-muted'>UK</small>",
+        "Paris"     = "<strong>Paris</strong> <small class='text-muted'>France</small>",
+        "Tokyo"     = "<strong>Tokyo</strong> <small class='text-muted'>Japan</small>"
+      )
     )
   })
 

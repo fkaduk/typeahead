@@ -22,6 +22,12 @@
     }
   }
 
+  function normalizeItems(items) {
+    return items.map(item =>
+      typeof item === "string" ? { label: item } : item
+    );
+  }
+
   function getInstance(el) {
     return el.__ta_instance__ || null;
   }
@@ -57,27 +63,25 @@
     initialize(el) {
       log("initialize start", { id: el.id, value: el.value });
       const options = parseJSONAttr(el, "data-options", {}) || {};
-      const local = parseJSONAttr(el, "data-source", []) || [];
+      const raw = parseJSONAttr(el, "data-source", []) || [];
+      const local = normalizeItems(raw);
 
       const inst = window.typeahead({
         input: el,
-        source: { local },
+        source: { local, keys: ["label"] },
         ...options,
+        templates: {
+          suggestion: (item) => {
+            return item.html || item.label || "";
+          },
+        },
         onSelect: (item) => {
           const t = typeof item;
           log("onSelect", { id: el.id, typeof: t, item });
-          // Force a primitive string for Shiny
           const str =
-            t === "string"
-              ? item
-              : (item &&
-                  (item.label ??
-                    item.value ??
-                    (item.toString && item.toString()))) ||
-                "";
+            t === "string" ? item : (item.label ?? "");
           el.value = String(str);
           log("onSelect -> set el.value", { id: el.id, value: el.value });
-          // notify Shiny without payload
           $(el).trigger("input");
         },
       });
@@ -123,7 +127,9 @@
         this.setValue(el, data.value);
       }
       if (Object.prototype.hasOwnProperty.call(data, "choices")) {
-        const arr = Array.isArray(data.choices) ? data.choices : [];
+        const arr = Array.isArray(data.choices)
+          ? normalizeItems(data.choices)
+          : [];
         log("receiveMessage choices", {
           id: el.id,
           len: arr.length,
