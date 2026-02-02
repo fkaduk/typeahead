@@ -48,8 +48,8 @@ describe("typeaheadInput unit tests", {
     opts <- jsonlite::fromJSON(
       regmatches(input_str, regexpr('data-options="([^"]*)"', input_str))
       |> sub(pattern = 'data-options="', replacement = "")
-      |> sub(pattern = '"$', replacement = "")
-      |> gsub(pattern = "&quot;", replacement = '"')
+        |> sub(pattern = '"$', replacement = "")
+        |> gsub(pattern = "&quot;", replacement = '"')
     )
     expect_false(opts$hint)
   })
@@ -119,8 +119,8 @@ describe("typeaheadInput unit tests", {
     opts <- jsonlite::fromJSON(
       regmatches(input_str, regexpr('data-options="([^"]*)"', input_str))
       |> sub(pattern = 'data-options="', replacement = "")
-      |> sub(pattern = '"$', replacement = "")
-      |> gsub(pattern = "&quot;", replacement = '"')
+        |> sub(pattern = '"$', replacement = "")
+        |> gsub(pattern = "&quot;", replacement = '"')
     )
     expect_true(opts$hint)
   })
