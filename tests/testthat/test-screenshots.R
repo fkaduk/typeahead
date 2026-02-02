@@ -11,8 +11,8 @@ new_app <- function(..., name) {
     name = name,
     variant = platform_variant(),
     seed = 1,
-    width = 1280,
-    height = 720
+    width = 400,
+    height = 400
   )
 }
 
