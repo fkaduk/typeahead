@@ -13,6 +13,7 @@ typeaheadInput(
   placeholder = NULL,
   items = 8,
   min_length = 1,
+  hint = FALSE,
   options = list()
 )
 }
@@ -32,6 +33,9 @@ typeaheadInput(
 \item{items}{Integer. Maximum number of suggestions to display in dropdown (default 8).}
 
 \item{min_length}{Integer. Minimum number of characters required before showing suggestions (default 1).}
+
+\item{hint}{Logical. If TRUE, shows an inline suggestion (ghost text) that
+completes the current input based on the best match (default FALSE).}
 
 \item{options}{List. Additional options passed to the typeahead.js library.}
 }
