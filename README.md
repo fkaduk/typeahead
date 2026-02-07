@@ -55,7 +55,8 @@ shinyApp(ui = ui, server = server)
 
 ## Development
 
-Check out the Makefile for some common operations that help development.
+Check out the Makefile for some common operations that help development,
+including `make test` and `make check`.
 
 ## TODO
 
