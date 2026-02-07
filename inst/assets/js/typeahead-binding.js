@@ -1,13 +1,10 @@
 (function () {
-  const DEBUG = false;
+  const DEBUG = true;
   const log = (...args) => {
     if (DEBUG) console.debug("[typeahead]", ...args);
   };
-  const warn = (...args) => {
-    if (DEBUG) console.warn("[typeahead]", ...args);
-  };
-  const err = (...args) => console.error("[typeahead]", ...args);
 
+  //parse input from R server
   function parseJSONAttr(el, attr, fallback) {
     const raw = el.getAttribute(attr);
     log("parseJSONAttr", { id: el.id, attr, raw });
@@ -17,38 +14,21 @@
       log("parseJSONAttr OK", { id: el.id, attr, type: typeof v, sample: v });
       return v;
     } catch (e) {
-      warn("parseJSONAttr FAIL", { id: el.id, attr, raw, error: e });
+      log("parseJSONAttr FAIL", { id: el.id, attr, raw, error: e });
       return fallback;
     }
   }
 
-  function normalizeItems(items) {
-    return items.map(item =>
-      typeof item === "string" ? { label: item } : item
+  //accept both unnamed string (js string) and
+  //named string (js array) from R server
+  function normalize_to_array(items) {
+    return items.map((item) =>
+      typeof item === "string" ? { label: item } : item,
     );
   }
 
-  function getInstance(el) {
-    return el.__ta_instance__ || null;
-  }
-  function setInstance(el, inst) {
-    el.__ta_instance__ = inst;
-  }
-  function destroyInstance(el) {
-    const inst = getInstance(el);
-    if (inst && typeof inst.destroy === "function") {
-      log("destroyInstance", el.id);
-      try {
-        inst.destroy();
-      } catch (e) {
-        warn("destroyInstance error", e);
-      }
-    }
-    el.__ta_instance__ = null;
-  }
-
+  //shiny input binding
   const binding = new Shiny.InputBinding();
-
   $.extend(binding, {
     find(scope) {
       const $els = $(scope).find("input.typeahead-standalone");
@@ -64,7 +44,7 @@
       log("initialize start", { id: el.id, value: el.value });
       const options = parseJSONAttr(el, "data-options", {}) || {};
       const raw = parseJSONAttr(el, "data-source", []) || [];
-      const local = normalizeItems(raw);
+      const local = normalize_to_array(raw);
 
       const inst = window.typeahead({
         input: el,
@@ -78,8 +58,7 @@
         onSelect: (item) => {
           const t = typeof item;
           log("onSelect", { id: el.id, typeof: t, item });
-          const str =
-            t === "string" ? item : (item.label ?? "");
+          const str = t === "string" ? item : (item.label ?? "");
           el.value = String(str);
           log("onSelect -> set el.value", { id: el.id, value: el.value });
           $(el).trigger("input");
@@ -95,7 +74,7 @@
         hint.classList.add("form-control");
       }
 
-      setInstance(el, inst);
+      el.__ta_instance__ = inst;
       log("initialize done", {
         id: el.id,
         local_size: Array.isArray(local) ? local.length : null,
@@ -105,7 +84,6 @@
     getValue(el) {
       const v = el.value || "";
       log("getValue", { id: el.id, type: typeof v, value: v });
-      // MUST be a primitive; object here triggers "Unexpected input value mode"
       return v;
     },
 
@@ -128,7 +106,7 @@
       }
       if (Object.prototype.hasOwnProperty.call(data, "choices")) {
         const arr = Array.isArray(data.choices)
-          ? normalizeItems(data.choices)
+          ? normalize_to_array(data.choices)
           : [];
         log("receiveMessage choices", {
           id: el.id,
@@ -137,7 +115,7 @@
         });
         el.setAttribute("data-source", JSON.stringify(arr));
 
-        const inst = getInstance(el);
+        const inst = el.__ta_instance__;
         if (inst) {
           log("receiveMessage reset+addToIndex", { id: el.id });
           const currentValue = el.value;
@@ -175,7 +153,7 @@
         try {
           callback();
         } catch (e) {
-          err("callback error", e);
+          log("callback error", e);
         }
       };
       $el.on("input.typeaheadBinding change.typeaheadBinding", handler);
@@ -190,7 +168,16 @@
     unsubscribe(el) {
       log("unsubscribe", { id: el.id });
       $(el).off(".typeaheadBinding");
-      destroyInstance(el);
+      const inst = el.__ta_instance__;
+      if (inst && typeof inst.destroy === "function") {
+        log("destroy instance", el.id);
+        try {
+          inst.destroy();
+        } catch (e) {
+          log("destroy instance error", e);
+        }
+      }
+      el.__ta_instance__ = null;
       el.__ta_handler__ = null;
     },
   });
