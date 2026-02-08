@@ -13,8 +13,8 @@ for R Shiny applications or interactive code chunks in R markdown.
 - Supports bootstrap 5 theming via [`bslib`]("https://cran.r-project.org/web/packages/bslib/index.html")
 - Displays suggestions inline hints and/or dropdown
 - Live updating of suggestions
-- [ ] Suggestions can be supplied from server or client-side
 - Rich display formatting of dropdown suggestions via custom html
+- [ ] Suggestions can be supplied from server or client-side
 
 ## Installation
 
